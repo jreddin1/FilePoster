@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.xcira</groupId>
 	<artifactId>FilePoster</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 
 	<properties>
 		<async-http-client-version>1.9.39</async-http-client-version>
