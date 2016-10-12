@@ -56,7 +56,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.xcira.httpclient.HttpClient</mainClass>
+							<mainClass>com.xcira.fileposter.FilePoster</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
