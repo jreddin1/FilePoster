@@ -1,7 +1,7 @@
 package com.xcira.fileposter;
 
 import java.io.File;
-import java.io.InputStream;
+import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -63,15 +63,8 @@ public class FilePoster {
 	private static void initializeProperties() throws Exception {
 		
 		Properties properties = new Properties();
-		
-		InputStream inputStream = FilePoster.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE_NAME);
-		
-		if (inputStream == null) {
-			
-			throw new Exception("Properties File Not Found");
-		}
-		
-		properties.load(inputStream);
+
+		properties.load(new FileInputStream(PROPERTIES_FILE_NAME));
 		
 		inputFolder = properties.getProperty("INPUT_FOLDER");
 		outputFolder = properties.getProperty("OUTPUT_FOLDER");
