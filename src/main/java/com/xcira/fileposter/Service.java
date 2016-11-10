@@ -8,18 +8,20 @@ import com.ning.http.client.Response;
 public class Service {
 
 	private String companyId;
-	private String username;
+	private String email;
 	private String password;
 	private String url;
 	private String body;
+	private String baseUrl;
 	private boolean secondAttempt = false;
 	
-	public Service(String companyId, String username, String password, String url, String body) {
+	public Service(String companyId, String email, String password, String url, String baseUrl, String body) {
 		
 		this.companyId = companyId;
-		this.username = username;
+		this.email = email;
 		this.password = password;
 		this.url = url;
+		this.baseUrl = baseUrl;
 		this.body = body;
 	}
 	
@@ -39,7 +41,6 @@ public class Service {
 			secondAttempt = false;
 			
 			return secondAttemptResponse;
-			
 		}
 
 		return response;
@@ -49,9 +50,9 @@ public class Service {
 
 		Map<String, String> companyUser = new HashMap<String, String>();
 		
-		companyUser.put("userName", username);
+		companyUser.put("email", email);
 		companyUser.put("password", password);
 
-		handleResponse(RestClient.put("company/" + companyId + "/user/signIn", JSONUtil.toJson(companyUser)));
+		handleResponse(RestClient.put(baseUrl + "/services/company/" + companyId + "/user/signIn", JSONUtil.toJson(companyUser)));
 	}
 }

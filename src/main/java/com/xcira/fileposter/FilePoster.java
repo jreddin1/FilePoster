@@ -21,9 +21,10 @@ public class FilePoster {
 	private static String inputFolder;
 	private static String outputFolder;
 	private static String companyId;
-	private static String username;
+	private static String email;
 	private static String password;
 	private static String url;
+	private static String baseUrl;
 
 	public static void main(String[] args) throws Exception {
 
@@ -54,6 +55,8 @@ public class FilePoster {
 				Thread.sleep(1);
 				
 			} catch (Exception exception) {
+				
+				//System.out.println(exception.getClass().getCanonicalName());
 
 				exception.printStackTrace();
 			}
@@ -69,13 +72,15 @@ public class FilePoster {
 		inputFolder = properties.getProperty("INPUT_FOLDER");
 		outputFolder = properties.getProperty("OUTPUT_FOLDER");
 		url = properties.getProperty("URL");
-		username = properties.getProperty("USERNAME");
+		email = properties.getProperty("EMAIL");
 		password = properties.getProperty("PASSWORD");
+		companyId = properties.getProperty("COMPANY_ID");
+		baseUrl = properties.getProperty("BASEURL");
 	}
 	
 	private static Response post(String file) throws Exception {
 		
-		return new Service(companyId, username, password, url, JSONUtil.toJson(createParameters(file))).sendRequest();
+		return new Service(companyId, email, password, url, baseUrl, JSONUtil.toJson(createParameters(file))).sendRequest();
 	}
 	
 	private static File getNextInputFile() throws Exception {
@@ -92,9 +97,11 @@ public class FilePoster {
 		}
 	}
 	
-	private static File[] getInputFiles() {
+	private static File[] getInputFiles() throws Exception {
 
 		File[] files = new File(inputFolder).listFiles();
+		
+		System.out.println(JSONUtil.toJson(files));
 		
 		Arrays.sort(files, new Comparator<File>() {
 
