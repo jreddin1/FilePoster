@@ -3,6 +3,7 @@ package com.xcira.fileposter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -78,9 +79,9 @@ public class FilePoster {
 	
 	private static Response post(String file) throws Exception {
 		
-		String[] urlParts = url.split("/");
+		URI baseUrl = new URI(url);
 		
-		return new Service(companyId, email, password, url, urlParts[0] + urlParts[1] + "//" + urlParts[2], JSONUtil.toJson(createParameters(file))).sendRequest();
+		return new Service(companyId, email, password, url, baseUrl.getScheme() + "://" + baseUrl.getAuthority(), JSONUtil.toJson(createParameters(file))).sendRequest();
 	}
 	
 	private static File getNextInputFile() throws Exception {
