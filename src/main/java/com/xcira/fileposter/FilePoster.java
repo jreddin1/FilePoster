@@ -24,7 +24,6 @@ public class FilePoster {
 	private static String email;
 	private static String password;
 	private static String url;
-	private static String baseUrl;
 
 	public static void main(String[] args) throws Exception {
 
@@ -75,12 +74,13 @@ public class FilePoster {
 		email = properties.getProperty("EMAIL");
 		password = properties.getProperty("PASSWORD");
 		companyId = properties.getProperty("COMPANY_ID");
-		baseUrl = properties.getProperty("BASEURL");
 	}
 	
 	private static Response post(String file) throws Exception {
 		
-		return new Service(companyId, email, password, url, baseUrl, JSONUtil.toJson(createParameters(file))).sendRequest();
+		String[] urlParts = url.split("/");
+		
+		return new Service(companyId, email, password, url, urlParts[0] + urlParts[1] + "//" + urlParts[2], JSONUtil.toJson(createParameters(file))).sendRequest();
 	}
 	
 	private static File getNextInputFile() throws Exception {
