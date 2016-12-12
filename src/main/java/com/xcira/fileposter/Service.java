@@ -1,5 +1,6 @@
 package com.xcira.fileposter;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,16 +13,14 @@ public class Service {
 	private String password;
 	private String url;
 	private String body;
-	private String baseUrl;
 	private boolean secondAttempt = false;
 	
-	public Service(String companyId, String email, String password, String url, String baseUrl, String body) {
+	public Service(String companyId, String email, String password, String url, String body) {
 		
 		this.companyId = companyId;
 		this.email = email;
 		this.password = password;
 		this.url = url;
-		this.baseUrl = baseUrl;
 		this.body = body;
 	}
 	
@@ -48,11 +47,13 @@ public class Service {
 	
 	protected void signIn() throws Exception {
 
+		URI baseUrl = new URI(url);
 		Map<String, String> companyUser = new HashMap<String, String>();
 		
 		companyUser.put("email", email);
 		companyUser.put("password", password);
+		companyUser.put("companyId", companyId);
 
-		handleResponse(RestClient.put(baseUrl + "/services/company/" + companyId + "/user/signIn", JSONUtil.toJson(companyUser)));
+		handleResponse(RestClient.put(baseUrl.getScheme() + "://" + baseUrl.getAuthority() + "/services/companyUser/signIn", JSONUtil.toJson(companyUser)));
 	}
 }
