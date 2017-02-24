@@ -5,7 +5,7 @@ FilePoster is used to post files from a specified input folder to a specified ht
 #### FilePoster.properties should be located in the same folder as the application and configured with the following properties:
 
 INPUT_FOLDER - Full file path of the input folder to post files from  
-OUTPUT_FOLDER - Full file path of the output folder to save responses to
+OUTPUT_FOLDER - Full file path of the output folder to save responses to  
 ERROR_FOLDER - Full file path of the error folder to save files to  
 URL - Full url of the http endpoint to post files to  
 COMPANY_ID - Provided company id for credential purposes  
@@ -17,6 +17,7 @@ PASSWORD - Provided password for credential purposes
 ```
 INPUT_FOLDER=C:/Users/User/Desktop/FilePoster/Input
 OUTPUT_FOLDER=C:/Users/User/Desktop/FilePoster/Output
+ERROR_FOLDER=C:/Users/User/Desktop/FilePoster/Error
 URL=http://exampleUrl.com/services/scriptConfiguration/exampleScript/run
 COMPANY_ID=8
 EMAIL=example@example.com
