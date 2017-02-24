@@ -1,11 +1,12 @@
 # FilePoster
 
-FilePoster is used to post files from a specified input folder to a specified http endpoint sequentially. File list to post is sorted by last modified time. Responses from the endpoint are saved in files in the specified output folder. File Poster is designed to work with Cubed platform and requires authentication credentials to be configured in properties file.
+FilePoster is used to post files from a specified input folder to a specified http endpoint sequentially. File list to post is sorted by last modified time. Responses from the endpoint are saved in files in the specified output folder. Files that cause an error are saved in the specified error folder. File Poster is designed to work with Cubed platform and requires authentication credentials to be configured in properties file.
 
 #### FilePoster.properties should be located in the same folder as the application and configured with the following properties:
 
 INPUT_FOLDER - Full file path of the input folder to post files from  
-OUTPUT_FOLDER - Full file path of the output folder to save responses to  
+OUTPUT_FOLDER - Full file path of the output folder to save responses to
+ERROR_FOLDER - Full file path of the error folder to save files to  
 URL - Full url of the http endpoint to post files to  
 COMPANY_ID - Provided company id for credential purposes  
 EMAIL - Provided email for credential purposes  

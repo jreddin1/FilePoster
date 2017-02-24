@@ -20,6 +20,7 @@ public class FilePoster {
 	
 	private static String inputFolder;
 	private static String outputFolder;
+	private static String errorFolder;
 	private static String companyId;
 	private static String email;
 	private static String password;
@@ -31,9 +32,11 @@ public class FilePoster {
 
 		while (true) {
 
+			File nextFile = null;
+			
 			try {
 				
-				File nextFile = getNextInputFile();
+				nextFile = getNextInputFile();
 				
 				if (nextFile != null) {
 					
@@ -41,13 +44,9 @@ public class FilePoster {
 					
 					saveResponse(response);
 					
-					if (response.getStatusCode() == 200 || response.getStatusCode() == 204) {
+					if (response.getStatusCode() != 200 && response.getStatusCode() != 204) {
 						
-						nextFile.delete();
-						
-					} else {
-						
-						Thread.sleep(1000);
+						copyToErrorFolder(nextFile);
 					}
 				}
 				
@@ -56,6 +55,13 @@ public class FilePoster {
 			} catch (Exception exception) {
 
 				exception.printStackTrace();
+			
+			} finally {
+				
+				if (nextFile != null) {
+					
+					nextFile.delete();
+				}
 			}
 		}
 	}
@@ -68,6 +74,7 @@ public class FilePoster {
 		
 		inputFolder = properties.getProperty("INPUT_FOLDER");
 		outputFolder = properties.getProperty("OUTPUT_FOLDER");
+		errorFolder = properties.getProperty("ERROR_FOLDER");
 		url = properties.getProperty("URL");
 		email = properties.getProperty("EMAIL");
 		password = properties.getProperty("PASSWORD");
@@ -115,6 +122,11 @@ public class FilePoster {
 		printWriter.print(response.getResponseBody());
 		
 		printWriter.close();
+	}
+	
+	private static void copyToErrorFolder(File file) throws Exception {
+		
+		Files.copy(file.toPath(), Paths.get(errorFolder).resolve(file.toPath().getFileName()));
 	}
 	
 	private static Map<String, Object> createParameters(String xml) {
