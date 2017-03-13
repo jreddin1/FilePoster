@@ -21,7 +21,6 @@ import com.ning.http.client.Response;
 public class FilePoster {
 
 	private static final String PROPERTIES_FILE_NAME = "./FilePoster.properties";
-	private static final Integer NUM_THREADS = 2;
 	
 	private static String inputFolder;
 	private static String outputFolder;
@@ -30,14 +29,15 @@ public class FilePoster {
 	private static String email;
 	private static String password;
 	private static String url;
+	private static Integer numThreads;
 
 	public static void main(String[] args) throws Exception {
 
-		ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
-		
 		initializeProperties();
 		
-		for (Integer i = 0; i < NUM_THREADS; i++) {
+		ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+		
+		for (Integer i = 0; i < numThreads; i++) {
 			
 			executorService.execute(new Worker());
 		}
@@ -103,6 +103,7 @@ public class FilePoster {
 		email = properties.getProperty("EMAIL");
 		password = properties.getProperty("PASSWORD");
 		companyId = properties.getProperty("COMPANY_ID");
+		numThreads = Integer.valueOf(properties.getProperty("NUM_THREADS"));
 	}
 	
 	private static Response post(String file) throws Exception {
