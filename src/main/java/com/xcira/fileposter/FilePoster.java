@@ -1,7 +1,9 @@
 package com.xcira.fileposter;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -11,12 +13,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.ning.http.client.Response;
 
 public class FilePoster {
 
 	private static final String PROPERTIES_FILE_NAME = "./FilePoster.properties";
+	private static final Integer NUM_THREADS = 2;
 	
 	private static String inputFolder;
 	private static String outputFolder;
@@ -28,39 +33,58 @@ public class FilePoster {
 
 	public static void main(String[] args) throws Exception {
 
+		ExecutorService executorService = Executors.newFixedThreadPool(NUM_THREADS);
+		
 		initializeProperties();
-
-		while (true) {
-
-			File nextFile = null;
+		
+		for (Integer i = 0; i < NUM_THREADS; i++) {
 			
-			try {
+			executorService.execute(new Worker());
+		}
+	}
+	
+	private static class FileInfo {
+		
+		public String fileName;
+		public String content;
+		
+		public FileInfo(String fileName, String content) {
+			
+			this.fileName = fileName;
+			this.content = content;
+		}
+	}
+	
+	private static class Worker implements Runnable {
+
+		@Override
+		public void run() {
+			
+			while (true) {
+
+				FileInfo nextFile = null;
 				
-				nextFile = getNextInputFile();
-				
-				if (nextFile != null) {
+				try {
 					
-					Response response = post(toString(nextFile));
+					nextFile = getNextInputFile();
 					
-					saveResponse(response);
-					
-					if (response.getStatusCode() != 200 && response.getStatusCode() != 204) {
+					if (nextFile != null) {
 						
-						copyToErrorFolder(nextFile);
+						Response response = post(nextFile.content);
+						
+						saveResponse(response);
+						
+						if (response.getStatusCode() != 200 && response.getStatusCode() != 204) {
+							
+							copyToErrorFolder(nextFile);
+						}
 					}
-				}
-				
-				Thread.sleep(1);
-				
-			} catch (Exception exception) {
-
-				exception.printStackTrace();
-			
-			} finally {
-				
-				if (nextFile != null) {
 					
-					nextFile.delete();
+					Thread.sleep(1);
+					
+				} catch (Exception exception) {
+
+					exception.printStackTrace();
 				}
 			}
 		}
@@ -86,13 +110,18 @@ public class FilePoster {
 		return new Service(companyId, email, password, url, JSONUtil.toJson(createParameters(file))).sendRequest();
 	}
 	
-	private static File getNextInputFile() throws Exception {
+	private static synchronized FileInfo getNextInputFile() throws Exception {
 		
 		File[] files = getInputFiles();
 		
 		if (files.length > 0) {
 
-			return files[0];
+			File file = files[0];
+			FileInfo fileInfo = new FileInfo(file.getName(), getContent(file));
+			
+			file.delete();
+			
+			return fileInfo;
 		
 		} else {
 			
@@ -124,9 +153,9 @@ public class FilePoster {
 		printWriter.close();
 	}
 	
-	private static void copyToErrorFolder(File file) throws Exception {
+	private static void copyToErrorFolder(FileInfo fileInfo) throws Exception {
 		
-		Files.copy(file.toPath(), Paths.get(errorFolder).resolve(file.toPath().getFileName()));
+		writeToFile(errorFolder + "/" + fileInfo.fileName, fileInfo.content);
 	}
 	
 	private static Map<String, Object> createParameters(String xml) {
@@ -138,7 +167,15 @@ public class FilePoster {
 		return parameters;
 	}
 	
-	private static String toString(File file) throws Exception {
+	private static void writeToFile(String filePath, String content) throws Exception {
+
+		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+		
+		bufferedWriter.write(content);
+		bufferedWriter.close();
+	}
+	
+	private static String getContent(File file) throws Exception {
 		
 		return new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())), Charset.defaultCharset());
 	}
